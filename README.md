@@ -29,8 +29,4 @@ This project is licensed under the MIT License - see the `LICENSE.md` file for d
 
 ## Support and Contact
 
-For any queries or support, please email [your-email@example.com] or raise an issue in the GitHub repository.
-
----
-
-Please replace the placeholders like `[your-repo-url]` and `[your-email@example.com]` with actual information. Let me know if you need additional sections or details!
+For any queries or support, please email [jeffery.sim.cz@gmail.com] or raise an issue in the GitHub repository.
