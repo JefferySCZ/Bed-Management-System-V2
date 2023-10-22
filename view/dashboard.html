@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../css/dashboard.css" />
+    <title>Dashboard & Patient Admission</title>
+  </head>
+  <body>
+    <header>
+      <h1>Hospital Bed Management System</h1>
+    </header>
+
+    <nav>
+      <ul>
+        <li><a href="main-menu.html">Home</a></li>
+        <li><a href="dashboard.html">Dashboard</a></li>
+      </ul>
+    </nav>
+
+    <div class="content-wrapper">
+      <div class="top-section">
+        <!-- Patient Admission Section -->
+        <section id="patient-admission-section">
+          <h2>Patient Admission</h2>
+          <form id="patient-admission-form">
+            <label for="patient-ID">ID :</label>
+            <input
+              type="text"
+              id="patient-ID"
+              name="patient-ID"
+              readonly
+              required
+            />
+
+            <label for="patient-name">Patient Name:</label>
+            <input
+              type="text"
+              id="patient-name"
+              name="patient-name"
+              pattern="^[A-Za-z\s]*$"
+              title="Please enter text only."
+              required
+            />
+
+            <label for="patient-gender">Gender</label>
+            <select name="patient-gender" id="patient-gender" required>
+              <option value="">-</option>
+
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
+
+            <label for="patient-bloodType">Blood Type:</label>
+            <select name="patient-bloodType" id="patient-bloodType" required>
+              <option value="">-</option>
+
+              <option value="A">A</option>
+              <option value="B">B</option>
+              <option value="AB">AB</option>
+              <option value="O">O</option>
+            </select>
+
+            <label for="patient-DOB">Date of Birth:</label>
+            <input type="date" id="patient-DOB" name="patient-DOB" required />
+
+            <label for="patient-age">Age:</label>
+            <input
+              type="text"
+              id="patient-age"
+              name="patient-age"
+              readonly
+              required
+            />
+
+            <label for="patient-illness">Illness/Condition:</label>
+            <input
+              type="text"
+              id="patient-illness"
+              name="patient-illness"
+              placeholder="Enter the Illness or Condition"
+              pattern="^[A-Za-z\s]*$"
+              title="Please enter text only."
+            />
+
+            <label for="patient-category">Category:</label>
+            <select name="patient-category" id="patient-category" required>
+              <option value="">-</option>
+
+              <option value="Intensive Care">Intensive Care</option>
+              <option value="Infectious Disease">Infectious Disease</option>
+              <option value="General Care">General Care</option>
+            </select>
+
+            <div class="button-group">
+              <button type="submit">Register</button>
+              <button type="reset">Reset</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="admission-process-section">
+          <div class="waiting-list">
+            <h3>Patients Waiting List:</h3>
+            <ul></ul>
+          </div>
+
+          <div class="control-panel">
+            <button onclick="admitPatient()">Admit Patient</button>
+            <div class="timer-display">Timer: <span class="timer">0</span></div>
+          </div>
+        </section>
+      </div>
+
+      <section class="bed-ward-section"">
+      <!-- Bed Ward Generator  -->
+    </div>
+
+    <script src="../js/dashBoard.js"></script>
+    <script src="../js/dataBase.js"></script>
+    <script src="../js/patientManagement.js"></script>
+    <script src="../js/bedManagement.js"></script>
+    <script src="../js/waitListManagement.js"></script>
+  </body>
+
+  <footer>Hospital Bed Management System © 2023</footer>
+</html>
