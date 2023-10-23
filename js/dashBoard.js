@@ -1,100 +1,160 @@
 'use strict'
 
-document.addEventListener('DOMContentLoaded', function () {
-  //Display Age function
-  document
-    .getElementById('patient-DOB')
-    .addEventListener('change', function (event) {
-      const dob = new Date(this.value)
-      const now = new Date()
+//Create the database
+let db
+function initDB() {
+  return new Promise((resolve, reject) => {
+    const request = window.indexedDB.open('BedManagementDB', 1)
 
-      if (dob > now) {
-        document.getElementById('patient-age').value = 'Invalid DOB'
-        return
+    // Create the schema
+    request.onupgradeneeded = function (event) {
+      try {
+        db = event.target.result
+
+        // Create Patient object store
+        if (!db.objectStoreNames.contains('Patients')) {
+          const patients = db.createObjectStore('Patients', {
+            keyPath: 'patientID',
+          })
+          patients.createIndex('name', 'name', { unique: false })
+          patients.createIndex('gender', 'gender', { unique: false })
+          patients.createIndex('bloodType', 'bloodType', { unique: false })
+          patients.createIndex('dob', 'dob', { unique: false })
+          patients.createIndex('age', 'age', { unique: false })
+          patients.createIndex('illness', 'illness', { unique: false })
+          patients.createIndex('wardCategory', 'wardCategory', {
+            unique: false,
+          })
+        }
+
+        // Create Beds object store
+        if (!db.objectStoreNames.contains('Beds')) {
+          const beds = db.createObjectStore('Beds', {
+            keyPath: 'bedNumber',
+          })
+          beds.createIndex('patientID', 'patientID', { unique: true })
+          beds.createIndex('wardCategory', 'wardCategory', { unique: false })
+        }
+
+        if (!db.objectStoreNames.contains('WaitList')) {
+          const waitList = db.createObjectStore('WaitList', {
+            keyPath: 'waitListID',
+            autoIncrement: true,
+          })
+          waitList.createIndex('patientID', 'patientID', { unique: true })
+        }
+      } catch (error) {
+        console.log('An error occurred during database upgrade:', error)
+        reject('There was an error during database upgrade')
       }
-      const ageDiff = now - dob
-      const ageDate = new Date(ageDiff)
-      const age = Math.abs(ageDate.getUTCFullYear() - 1970)
+    }
 
-      if (age > 125) {
-        document.getElementById('patient-age').value = 'Age exceeds valid range'
-        return
+    request.onsuccess = function (event) {
+      try {
+        console.log('Database opened successfully')
+        db = event.target.result
+        resolve()
+      } catch (error) {
+        console.log('An error occurred while opening the database:', error)
+        reject('There was an error while opening the database')
       }
+    }
 
-      document.getElementById('patient-age').value = age + ' years old'
-    })
-})
-
-// Function to generate ward
-function generateWard(title, numOfBeds, startingBedNumber) {
-  let ward = document.createElement('div')
-  ward.className = 'ward'
-
-  let h3 = document.createElement('h3')
-  h3.textContent = title
-  ward.appendChild(h3)
-
-  let bedRow = document.createElement('div')
-  bedRow.className = 'bed-row'
-
-  for (let i = 0; i < numOfBeds; i++) {
-    let bed = document.createElement('div')
-    bed.className = 'bed-icon'
-
-    let pillow = document.createElement('div')
-    pillow.className = 'pillow'
-    bed.appendChild(pillow)
-
-    let bedSheet = document.createElement('div')
-    bedSheet.className = 'bed-sheet'
-    bedSheet.dataset.occupied = 'false'
-    bedSheet.dataset.bedNumber = startingBedNumber + i
-    bedSheet.classList.add(
-      bedSheet.dataset.occupied === 'true' ? 'occupied' : 'available'
-    )
-
-    bed.appendChild(bedSheet)
-
-    let bedNumberSpan = document.createElement('span')
-    bedNumberSpan.className = 'bed-number'
-    bedNumberSpan.textContent = startingBedNumber + i
-    bed.appendChild(bedNumberSpan)
-
-    //Discharge button
-    let dischargeButton = document.createElement('button')
-    dischargeButton.className = 'discharge-btn'
-    dischargeButton.textContent = 'Discharge'
-    // Hidden button when the bed is unoccupied
-    dischargeButton.addEventListener('click', function () {
-      dischargePatient(bedSheet.dataset.bedNumber)
-    })
-    bedSheet.appendChild(dischargeButton)
-
-    bedRow.appendChild(bed)
-  }
-
-  ward.appendChild(bedRow)
-
-  return ward
+    request.onerror = function (event) {
+      console.log(
+        'There was an error opening the database:',
+        event.target.error
+      )
+      reject('There was an error opening the database')
+    }
+  })
 }
 
-let bedSection = document.querySelector('.bed-ward-section')
-const wardConfigurations = [
-  {
-    title: 'Intensive Care Ward (10 beds) - Level 1',
-    beds: 2,
-    startNumber: 101,
-  },
-  {
-    title: 'Infectious Disease Ward (10 beds) - Level 2',
-    beds: 10,
-    startNumber: 201,
-  },
-  { title: 'General Ward (20 beds) - Level 3', beds: 20, startNumber: 301 },
-]
+//DOM
+document.addEventListener('DOMContentLoaded', function () {
+  console.log('DOM is ready')
 
-wardConfigurations.forEach((config) => {
-  bedSection.appendChild(
-    generateWard(config.title, config.beds, config.startNumber)
-  )
+  initDB()
+    .then(() => {
+      const initialPatientID = generateRandomID()
+      document.getElementById('patient-ID').value = initialPatientID
+      return refreshDatabase()
+    })
+    .then(() => {
+      console.log('Database refreshed successfully')
+    })
+    .catch((error) => {
+      console.error('Error refreshing the database:', error)
+    })
 })
+
+async function refreshDatabase() {
+  try {
+    // Fetch data from Patients and WaitList object stores
+    const patients = await getData('Patients')
+    const waitingPatients = await getData('WaitList')
+
+    // Check if the fetched data is valid
+    if (!patients) {
+      throw new Error('Failed to fetch patients')
+    }
+    if (!waitingPatients) {
+      throw new Error('Failed to fetch waiting patients')
+    }
+
+    console.log('Patients:', patients)
+    console.log('Waiting Patients:', waitingPatients)
+
+    // Handle patients with bed numbers or assign available beds
+    for (const currentPatient of patients) {
+      if (!currentPatient) {
+        console.warn('Invalid patient record:', currentPatient)
+        continue // Skip to next iteration
+      }
+
+      if (currentPatient.bedNumber) {
+        markBedAsOccupied(currentPatient.bedNumber)
+      } else {
+        const bedNumber = findAvailableBed()
+        console.log(bedNumber)
+        if (bedNumber) {
+          assignBedToPatient(
+            currentPatient,
+            bedNumber,
+            currentPatient.wardCategory
+          )
+        } else {
+          console.log('No available beds, adding patient to waiting list')
+          addToWaitingList(currentPatient)
+        }
+      }
+    }
+
+    // Populate the waiting list
+    const waitingList = document.querySelector('.waiting-list ul')
+    if (!waitingList) {
+      throw new Error('Failed to find waiting list element')
+    }
+
+    waitingPatients.forEach((patientData) => {
+      if (!patientData) {
+        console.warn('Invalid patient data:', patientData)
+        return // Skip to next iteration
+      }
+      const patient = patientData
+      const li = document.createElement('li')
+      li.textContent = `ID: ${patient.patientID}, Name: ${patient.name} (Category: ${patient.wardCategory})`
+
+      if (patient.bedNumber) {
+        const bedInfo = document.createElement('span')
+        bedInfo.textContent = `(Assigned Bed #${patient.bedNumber})`
+        bedInfo.classList.add('bed-info')
+        li.appendChild(bedInfo)
+      }
+
+      waitingList.appendChild(li)
+    })
+  } catch (error) {
+    console.error('Error refreshing the database:', error)
+  }
+}

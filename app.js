@@ -16,7 +16,7 @@ io.on('connection', (socket) => {
 })
 
 app.get('/', (_req, res) => {
-  res.sendFile(__dirname + '/view/dashboard.html', (err) => {
+  res.sendFile(__dirname + '/views/dashboard.html', (err) => {
     if (err) {
       res.status(500).send(err)
     }
