@@ -4,7 +4,9 @@ const PORT = 8080
 const http = require('http').Server(app)
 const io = require('socket.io')(http)
 
-app.use(express.static('public'))
+app.use('/view', express.static('view'))
+app.use('/css', express.static('css'))
+app.use('/js', express.static('js'))
 
 io.on('connection', (socket) => {
   console.log('A user connected')
@@ -13,10 +15,14 @@ io.on('connection', (socket) => {
   })
 })
 
-app.get('/', (req, res) => {
-  res.sendFIle(__dirname + '/public/index.html')
+app.get('/', (_req, res) => {
+  res.sendFile(__dirname + '/view/dashboard.html', (err) => {
+    if (err) {
+      res.status(500).send(err)
+    }
+  })
 })
-
+console.log('__dirname is:', __dirname)
 http.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`)
 })
