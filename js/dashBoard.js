@@ -1,5 +1,3 @@
-'use strict'
-
 //Create the database
 let db
 function initDB() {
@@ -91,7 +89,8 @@ document.addEventListener('DOMContentLoaded', function () {
 async function refreshDatabase() {
   try {
     // Fetch data from Patients and WaitList object stores
-    const patients = await getData('Patients')
+    const patients = await getData('Beds')
+    console.log(patients)
     const waitingPatients = await getData('WaitList')
 
     // Check if the fetched data is valid
@@ -113,7 +112,12 @@ async function refreshDatabase() {
       }
 
       if (currentPatient.bedNumber) {
-        markBedAsOccupied(currentPatient.bedNumber)
+        markBedAsOccupied(
+          currentPatient.bedNumber,
+          currentPatient.patientID,
+          currentPatient.wardCategory
+        )
+        console.log(markBedAsOccupied(currentPatient.bedNumber))
       } else {
         const bedNumber = findAvailableBed()
         console.log(bedNumber)

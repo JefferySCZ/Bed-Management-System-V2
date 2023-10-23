@@ -1,5 +1,3 @@
-'use strict'
-
 //Create (Add Patient)
 // Function to get patient details from form
 const MAX_ID_VALUE = 1000
@@ -41,29 +39,6 @@ async function handleValidPatient(patient) {
   }
 }
 
-async function updatePatientWithBedNumber(patientID, bedNumber) {
-  try {
-    const transaction = db.transaction(['Patients'], 'readwrite')
-    const patientStore = transaction.objectStore('Patients')
-    const getPatientRequest = patientStore.get(patientID)
-
-    const storedPatient = await new Promise((resolve, reject) => {
-      getPatientRequest.onsuccess = () => resolve(getPatientRequest.result)
-      getPatientRequest.onerror = (event) => reject(event)
-    })
-
-    storedPatient.bedNumber = bedNumber
-
-    await new Promise((resolve, reject) => {
-      const updateRequest = patientStore.put(storedPatient)
-
-      updateRequest.onsuccess = () => resolve()
-      updateRequest.onerror = (event) => reject(event)
-    })
-  } catch (error) {
-    throw error
-  }
-}
 async function isUniqueID(id) {
   const transaction = db.transaction(['Patients'], 'readonly')
   const store = transaction.objectStore('Patients')

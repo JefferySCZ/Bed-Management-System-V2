@@ -1,5 +1,3 @@
-'use strict'
-
 function isWardFull() {
   const allBeds = document.querySelectorAll('.bed-sheet')
   for (let bed of allBeds) {
@@ -60,8 +58,7 @@ async function markBedAsOccupied(bedNumber, patientID, wardCategory) {
   const bedElement = document.querySelector(
     `.bed-sheet[data-bed-number='${bedNumber}']`
   )
-  const patientID = document.querySelector('#patient-ID').value
-  const wardCategory = document.querySelector('#patient-wardCategory').value
+
   if (bedElement) {
     bedElement.classList.remove('available')
     bedElement.classList.add('occupied')
@@ -80,7 +77,7 @@ async function markBedAsOccupied(bedNumber, patientID, wardCategory) {
     bedNumber,
     occupied: true,
     patientID,
-    wardCategory: wardCategory,
+    wardCategory,
   }
 
   try {

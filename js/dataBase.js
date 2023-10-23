@@ -1,5 +1,3 @@
-'use strict'
-
 async function addData(storeName, data) {
   return new Promise((resolve, reject) => {
     const transaction = db.transaction([storeName], 'readwrite')
@@ -16,6 +14,29 @@ async function addData(storeName, data) {
       )
     }
   })
+}
+async function updatePatientWithBedNumber(patientID, bedNumber) {
+  try {
+    const transaction = db.transaction(['Patients'], 'readwrite')
+    const patientStore = transaction.objectStore('Patients')
+    const getPatientRequest = patientStore.get(patientID)
+
+    const storedPatient = await new Promise((resolve, reject) => {
+      getPatientRequest.onsuccess = () => resolve(getPatientRequest.result)
+      getPatientRequest.onerror = (event) => reject(event)
+    })
+
+    storedPatient.bedNumber = bedNumber
+
+    await new Promise((resolve, reject) => {
+      const updateRequest = patientStore.put(storedPatient)
+
+      updateRequest.onsuccess = () => resolve()
+      updateRequest.onerror = (event) => reject(event)
+    })
+  } catch (error) {
+    throw error
+  }
 }
 
 function getData(storeName) {
