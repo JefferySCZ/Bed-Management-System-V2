@@ -117,7 +117,6 @@ async function refreshDatabase() {
           currentPatient.patientID,
           currentPatient.wardCategory
         )
-        console.log(markBedAsOccupied(currentPatient.bedNumber))
       } else {
         const bedNumber = findAvailableBed()
         console.log(bedNumber)

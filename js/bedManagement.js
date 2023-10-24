@@ -79,23 +79,26 @@ async function markBedAsOccupied(bedNumber, patientID, wardCategory) {
     patientID,
     wardCategory,
   }
+  console.log('Data to be saved:', bedData) // Debugging line
 
   try {
     const bedUpdateRequest = bedStore.put(bedData)
 
-    await new Promise((resolve, reject) => {
-      bedUpdateRequest.addEventListener('success', () => {
-        console.log('Bed successfully marked as occupied')
-        resolve(true)
-      })
-      bedUpdateRequest.addEventListener('error', (event) => {
-        console.error('Error marking bed as occupied', event)
-        reject(new Error('Could not mark bed as occupied'))
-      })
+    bedUpdateRequest.addEventListener('success', () => {
+      console.log('Bed successfully marked as occupied')
     })
+
+    bedUpdateRequest.addEventListener('error', (event) => {
+      console.error('Error marking bed as occupied', event)
+    })
+
+    transaction.onerror = function (event) {
+      console.error('Transaction failed:', event)
+    }
+
     return true
   } catch (error) {
-    console.error('Error marking bed as occupied:', error)
+    console.error('Error updating bed status in the database', error)
     return false
   }
 }
