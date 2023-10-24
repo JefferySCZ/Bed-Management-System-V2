@@ -88,9 +88,11 @@ async function markBedAsOccupied(bedNumber, patientID, wardCategory) {
     bedUpdateRequest.onerror = (event) => {
       console.error('Error marking bed as occupied', event)
     }
+    return bedData
   } catch (error) {
     console.error('Error updating bed status in the database', error)
   }
+  return null
 }
 
 async function isBedOccupied(bedNumber) {
