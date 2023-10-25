@@ -34,13 +34,18 @@ async function admitPatient() {
   // Extract patientID from the list item, assuming it starts with "ID: "
   const admittedPatientText = admittedPatientLi.textContent
   const patientID = admittedPatientText.split(',')[0].split(': ')[1]
+  console.log(patientID)
 
   // Remove the patient from the WaitList object store
   const waitListTransaction = db.transaction(['WaitList'], 'readwrite')
   const waitListStore = waitListTransaction.objectStore('WaitList')
-  await waitListStore.delete('waitListID')
-  const bedElement = document.querySelector('.bed-sheet.occupied')
-  const bedNumber = bedElement.getAttribute('data-bed-number')
+  await waitListStore.delete(patientID)
+  const bedElement = document.querySelector('.bed-sheet[data-bed-number]')
+  const bedNumber = bedElement
+    ? bedElement.getAttribute('data-bed-number')
+    : null
+
+  // const bedNumber = bedElement.getAttribute('data-bed-number')
 
   if (bedNumber !== null) {
     console.log(
