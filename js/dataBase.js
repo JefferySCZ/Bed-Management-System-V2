@@ -54,3 +54,19 @@ function getData(storeName) {
     }
   })
 }
+
+function getWaitListData(storeName, key) {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction([storeName], 'readonly')
+    const store = transaction.objectStore(storeName)
+    const request = store.get(key)
+
+    request.onsuccess = function (event) {
+      resolve(event.target.result)
+    }
+
+    request.onerror = function (event) {
+      reject('Error fetching data from' + storeName)
+    }
+  })
+}

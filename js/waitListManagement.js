@@ -19,7 +19,10 @@ async function addToWaitingList(patient) {
   waitingList.appendChild(li)
 }
 
-async function admitPatient() {
+async function admitPatient(patient) {
+  const waitList_patient = getData('WaitList', patient)
+  console.log('PatientLA :', waitList_patient)
+
   const waitingList = document.querySelector('.waiting-list ul')
   const admittedPatientLi = waitingList.firstChild
 
@@ -27,7 +30,16 @@ async function admitPatient() {
     console.log('No patients in the waiting list.')
     return
   }
-
+  isWardFull()
+  findAvailableBed()
+  const BED_CONFIG = {
+    'Intensive Care': { startNum: 101, count: 2 },
+    'Infectious Disease': { startNum: 201, count: 10 },
+    'General Care': { startNum: 301, count: 20 },
+  }
+  assignBedToPatient(BED_CONFIG, waitList_patient)
+  markBedAsOccupied(waitList_patient.wardCategory, waitList_patient.patientID)
+  Í
   // Remove the patient from the UI waiting list
   waitingList.firstChild.remove()
 

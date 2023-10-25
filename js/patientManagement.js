@@ -70,6 +70,23 @@ async function addPatient() {
   }
 }
 
+// async function addWaitListPatient() {
+//   const waitListPatientTransaction = db.transaction(['WaitList'], 'readwrite')
+//   const waitListStore = waitListPatientTransaction.objectStore('WaitList')
+//   const patient = await new Promise((resolve, reject) => {
+//     const request = waitListStore.get('patientID')
+//     const patientData = request.result
+//     patientData.onsuccess = () => resolve(request.result)
+//     patientData.onerror = () => reject(request.error)
+//   })
+
+//   console.log(patient)
+//   if (!patient) {
+//     console.error('No data found for patient ID')
+//     return
+//   }
+// }
+
 document
   .getElementById('patient-admission-form')
   .addEventListener('submit', async function (event) {

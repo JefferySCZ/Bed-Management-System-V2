@@ -90,7 +90,6 @@ async function refreshDatabase() {
   try {
     // Fetch data from Patients and WaitList object stores
     const patients = await getData('Beds')
-    console.log(patients)
     const waitingPatients = await getData('WaitList')
 
     // Check if the fetched data is valid
