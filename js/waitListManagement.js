@@ -39,19 +39,46 @@ async function admitPatient() {
   // Remove the patient from the WaitList object store
   const waitListTransaction = db.transaction(['WaitList'], 'readwrite')
   const waitListStore = waitListTransaction.objectStore('WaitList')
-  await waitListStore.delete(patientID)
-  const bedElement = document.querySelector('.bed-sheet[data-bed-number]')
-  const bedNumber = bedElement
-    ? bedElement.getAttribute('data-bed-number')
-    : null
+  const waitListIndex = waitListStore.index('patientID')
 
-  // const bedNumber = bedElement.getAttribute('data-bed-number')
+  try {
+    const waitListKey = await new Promise((resolve, reject) => {
+      const request = waitListIndex.getKey(patientID)
+      request.onsuccess = () => resolve(request.result)
+      request.onerror = () =>
+        reject(new Error('Failed to get key from WaitList'))
+    })
 
-  if (bedNumber !== null) {
-    console.log(
-      `Patient with ID ${patientID} has been admitted and assigned to bed #${bedNumber}`
-    )
-  } else {
-    console.log('Could not admit patient, no available beds.')
+    if (waitListKey != undefined) {
+      await new Promise((resolve, reject) => {
+        const deleteRequest = waitListStore.delete(waitListKey)
+
+        deleteRequest.onsuccess = () => {
+          console.log('Patient deleted from database successfully')
+          resolve()
+        }
+        deleteRequest.onerror = () => {
+          console.error('Failed to delete patient from database')
+          reject(new Error('Failed to delete patient'))
+        }
+      })
+    }
+
+    const bedElement = document.querySelector('.bed-sheet[data-bed-number]')
+    const bedNumber = bedElement
+      ? bedElement.getAttribute('data-bed-number')
+      : null
+
+    // const bedNumber = bedElement.getAttribute('data-bed-number')
+
+    if (bedNumber !== null) {
+      console.log(
+        `Patient with ID ${patientID} has been admitted and assigned to bed #${bedNumber}`
+      )
+    } else {
+      console.log('Could not admit patient, no available beds.')
+    }
+  } catch (error) {
+    console.error('Error in admitPatient:', error)
   }
 }

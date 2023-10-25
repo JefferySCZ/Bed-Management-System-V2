@@ -33,7 +33,7 @@ async function handleValidPatient(patient) {
     markBedAsOccupied(bedNumber, patientID, patient.wardCategory)
     console.log(`Assigned Bed #${bedNumber} to ${patient.name}`)
   } else {
-    const patientID = await addData('WaitList', patient)
+    await addData('WaitList', patient)
     await addToWaitingList(patient)
     console.log(`No bed available for ${patient.name}. Added to waiting list.`)
   }
