@@ -20,8 +20,8 @@ async function addToWaitingList(patient) {
 }
 
 async function admitPatient(patient) {
-  const waitList_patient = getData('WaitList', patient)
-  console.log('PatientLA :', waitList_patient)
+  const waitListPatient = await getData('WaitList', patient)
+  console.log('waitListPatient:', waitListPatient)
 
   const waitingList = document.querySelector('.waiting-list ul')
   const admittedPatientLi = waitingList.firstChild
@@ -30,25 +30,23 @@ async function admitPatient(patient) {
     console.log('No patients in the waiting list.')
     return
   }
+
   isWardFull()
   findAvailableBed()
-  const BED_CONFIG = {
-    'Intensive Care': { startNum: 101, count: 2 },
-    'Infectious Disease': { startNum: 201, count: 10 },
-    'General Care': { startNum: 301, count: 20 },
-  }
-  assignBedToPatient(BED_CONFIG, waitList_patient)
-  markBedAsOccupied(waitList_patient.wardCategory, waitList_patient.patientID)
-  Í
-  // Remove the patient from the UI waiting list
+
+  assignBedToPatient(BED_CONFIG, waitListPatient)
+  markBedAsOccupied(
+    bedNumber,
+    waitListPatient.patientID,
+    waitListPatient.wardCategory
+  )
+
   waitingList.firstChild.remove()
 
-  // Extract patientID from the list item, assuming it starts with "ID: "
   const admittedPatientText = admittedPatientLi.textContent
-  const patientID = admittedPatientText.split(',')[0].split(': ')[1]
+  const patientID = admittedPatientText.split(', ')[0].split(': ')[1]
   console.log(patientID)
 
-  // Remove the patient from the WaitList object store
   const waitListTransaction = db.transaction(['WaitList'], 'readwrite')
   const waitListStore = waitListTransaction.objectStore('WaitList')
   const waitListIndex = waitListStore.index('patientID')
@@ -61,7 +59,7 @@ async function admitPatient(patient) {
         reject(new Error('Failed to get key from WaitList'))
     })
 
-    if (waitListKey != undefined) {
+    if (waitListKey !== undefined) {
       await new Promise((resolve, reject) => {
         const deleteRequest = waitListStore.delete(waitListKey)
 
@@ -80,8 +78,6 @@ async function admitPatient(patient) {
     const bedNumber = bedElement
       ? bedElement.getAttribute('data-bed-number')
       : null
-
-    // const bedNumber = bedElement.getAttribute('data-bed-number')
 
     if (bedNumber !== null) {
       console.log(

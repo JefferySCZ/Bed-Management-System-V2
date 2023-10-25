@@ -26,6 +26,11 @@ const BED_CONFIG = {
 }
 
 async function assignBedToPatient(wardCategory) {
+  const BED_CONFIG = {
+    'Intensive Care': { startNum: 101, count: 2 },
+    'Infectious Disease': { startNum: 201, count: 10 },
+    'General Care': { startNum: 301, count: 20 },
+  }
   console.log('Trying to assign bed for ward category:', wardCategory)
 
   if (!wardCategory || !BED_CONFIG[wardCategory]) {
