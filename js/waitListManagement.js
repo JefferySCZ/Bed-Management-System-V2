@@ -19,7 +19,7 @@ async function addToWaitingList(patient) {
   waitingList.appendChild(li)
 }
 
-async function admitPatient(patient) {
+async function admitPatient(patient, bedNumber) {
   const waitListPatient = await getData('WaitList', patient)
   console.log('waitListPatient:', waitListPatient)
 
@@ -30,16 +30,6 @@ async function admitPatient(patient) {
     console.log('No patients in the waiting list.')
     return
   }
-
-  isWardFull()
-  findAvailableBed()
-
-  assignBedToPatient(BED_CONFIG, waitListPatient)
-  markBedAsOccupied(
-    bedNumber,
-    waitListPatient.patientID,
-    waitListPatient.wardCategory
-  )
 
   waitingList.firstChild.remove()
 
@@ -58,6 +48,9 @@ async function admitPatient(patient) {
       request.onerror = () =>
         reject(new Error('Failed to get key from WaitList'))
     })
+    isWardFull()
+    findAvailableBed()
+    await handleValidPatient(waitListIndex)
 
     if (waitListKey !== undefined) {
       await new Promise((resolve, reject) => {

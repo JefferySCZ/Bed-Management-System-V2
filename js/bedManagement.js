@@ -19,12 +19,6 @@ function findAvailableBed() {
   return null
 }
 
-const BED_CONFIG = {
-  'Intensive Care': { startNum: 101, count: 2 },
-  'Infectious Disease': { startNum: 201, count: 10 },
-  'General Care': { startNum: 301, count: 20 },
-}
-
 async function assignBedToPatient(wardCategory) {
   const BED_CONFIG = {
     'Intensive Care': { startNum: 101, count: 2 },
