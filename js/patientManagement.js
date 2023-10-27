@@ -39,6 +39,17 @@ async function handleValidPatient(patient) {
   }
 }
 
+async function handleWaitListPatient(patient) {
+  const bedNumber = await assignBedToPatient(patient.wardCategory)
+
+  if (bedNumber) {
+    const patientID = await addData('Patients', patient)
+    updatePatientWithBedNumber(patientID, bedNumber)
+    markBedAsOccupied(bedNumber, patientID, patient.wardCategory)
+    console.log(`Assigned Bed #${bedNumber} to ${patient.name}`)
+  }
+}
+
 async function isUniqueID(id) {
   const transaction = db.transaction(['Patients'], 'readonly')
   const store = transaction.objectStore('Patients')

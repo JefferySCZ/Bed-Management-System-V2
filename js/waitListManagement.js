@@ -48,9 +48,10 @@ async function admitPatient(patient, bedNumber) {
       request.onerror = () =>
         reject(new Error('Failed to get key from WaitList'))
     })
+
     isWardFull()
     findAvailableBed()
-    await handleValidPatient(waitListIndex)
+    await handleWaitListPatient(waitListIndex)
 
     if (waitListKey !== undefined) {
       await new Promise((resolve, reject) => {

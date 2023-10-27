@@ -1,12 +1,12 @@
 function isWardFull() {
   const allBeds = document.querySelectorAll('.bed-sheet')
   for (let bed of allBeds) {
-    if (bed.dataset.occupied === 'false') {
+    if (bed.dataset.occupied === 'true') {
       console.log('Ward is full')
-      return false
+      return true
     }
   }
-  return true
+  return false
 }
 
 function findAvailableBed() {
