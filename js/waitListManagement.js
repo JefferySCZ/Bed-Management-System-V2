@@ -19,68 +19,66 @@ async function addToWaitingList(patient) {
   waitingList.appendChild(li)
 }
 
-async function admitPatient(patient, bedNumber) {
-  const waitListPatient = await getData('WaitList', patient)
-  console.log('waitListPatient:', waitListPatient)
-
-  const waitingList = document.querySelector('.waiting-list ul')
-  const admittedPatientLi = waitingList.firstChild
-
-  if (!admittedPatientLi) {
-    console.log('No patients in the waiting list.')
-    return
-  }
-
-  waitingList.firstChild.remove()
-
-  const admittedPatientText = admittedPatientLi.textContent
-  const patientID = admittedPatientText.split(', ')[0].split(': ')[1]
-  console.log(patientID)
-
-  const waitListTransaction = db.transaction(['WaitList'], 'readwrite')
-  const waitListStore = waitListTransaction.objectStore('WaitList')
-  const waitListIndex = waitListStore.index('patientID')
-
+async function admitPatient(patient) {
   try {
-    const waitListKey = await new Promise((resolve, reject) => {
-      const request = waitListIndex.getKey(patientID)
-      request.onsuccess = () => resolve(request.result)
-      request.onerror = () =>
-        reject(new Error('Failed to get key from WaitList'))
-    })
+    const patientDataArray = await getData('WaitList', patient)
+    console.log('patientData:', patientDataArray)
 
-    isWardFull()
-    findAvailableBed()
-    await handleWaitListPatient(waitListIndex)
-
-    if (waitListKey !== undefined) {
-      await new Promise((resolve, reject) => {
-        const deleteRequest = waitListStore.delete(waitListKey)
-
-        deleteRequest.onsuccess = () => {
-          console.log('Patient deleted from database successfully')
-          resolve()
-        }
-        deleteRequest.onerror = () => {
-          console.error('Failed to delete patient from database')
-          reject(new Error('Failed to delete patient'))
-        }
-      })
+    if (!patientDataArray || patientDataArray.length === 0) {
+      console.log('No patients in the waiting list.')
+      return
     }
 
-    const bedElement = document.querySelector('.bed-sheet[data-bed-number]')
-    const bedNumber = bedElement
-      ? bedElement.getAttribute('data-bed-number')
-      : null
+    const waitingList = document.querySelector('.waiting-list ul')
+    const admittedPatientLi = waitingList.firstChild
 
-    if (bedNumber !== null) {
-      console.log(
-        `Patient with ID ${patientID} has been admitted and assigned to bed #${bedNumber}`
-      )
-    } else {
-      console.log('Could not admit patient, no available beds.')
+    if (!admittedPatientLi) {
+      console.log('No patients in the waiting list.')
+      return
     }
+
+    waitingList.firstChild.remove()
+
+    const admittedPatientText = admittedPatientLi.textContent
+    const waitListPatientID = admittedPatientText.split(', ')[0].split(': ')[1]
+    console.log(waitListPatientID)
+
+    const patientData = patientDataArray[0]
+    console.log('Selected patientData:', patientData)
+
+    if (!patientData) {
+      console.log('No Patient in the wait list')
+      return
+    }
+
+    const bedNumber = await assignBedToPatient(patientData.wardCategory)
+
+    if (!bedNumber) {
+      console.log('No available Bed')
+      return
+    }
+
+    const patientID = await addData('Patients', patientData)
+    await markBedAsOccupied(bedNumber, patientID, patientData.wardCategory)
+
+    //Delete Patient from 'WaitList'
+    const waitListTransaction = db.transaction(['WaitList'], 'readwrite')
+    const waitListStoreDelete = waitListTransaction.objectStore('WaitList')
+    const waitListIndexDelete = waitListStoreDelete.index('patientID')
+    const waitListRequestDelete = waitListIndexDelete.getKey(patientID)
+
+    waitListRequestDelete.onsuccess = () => {
+      const waitListKey = waitListRequestDelete.result
+      if (waitListKey != undefined) {
+        waitListStoreDelete.delete(waitListKey)
+        console.log('Patient deleted from database successfully')
+      }
+    }
+
+    console.log(
+      `Patient ID ${patientID} has been admitted， and assigned to bed #${bedNumber}`
+    )
   } catch (error) {
-    console.error('Error in admitPatient:', error)
+    console.error('Occurred an error:', error)
   }
 }
