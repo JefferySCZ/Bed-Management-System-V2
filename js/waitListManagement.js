@@ -23,6 +23,8 @@ async function admitPatient(patient) {
   try {
     const patientDataArray = await getData('WaitList', patient)
     console.log('patientData:', patientDataArray)
+    const patientData = patientDataArray[0]
+    console.log('Selected patientData:', patientData)
 
     if (!patientDataArray || patientDataArray.length === 0) {
       console.log('No patients in the waiting list.')
@@ -37,24 +39,22 @@ async function admitPatient(patient) {
       return
     }
 
+    const bedNumber = await assignBedToPatient(patientData.wardCategory)
+
+    if (!bedNumber) {
+      alert(`No bed available for ${patientData.name}for now.`)
+      console.log('No available Bed')
+      return
+    }
+
     waitingList.firstChild.remove()
 
     const admittedPatientText = admittedPatientLi.textContent
     const waitListPatientID = admittedPatientText.split(', ')[0].split(': ')[1]
     console.log(waitListPatientID)
 
-    const patientData = patientDataArray[0]
-    console.log('Selected patientData:', patientData)
-
     if (!patientData) {
       console.log('No Patient in the wait list')
-      return
-    }
-
-    const bedNumber = await assignBedToPatient(patientData.wardCategory)
-
-    if (!bedNumber) {
-      console.log('No available Bed')
       return
     }
 

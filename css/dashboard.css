@@ -9,6 +9,7 @@
   --primary-bg-color: #01a7ac;
   --shadow-color: rgba(0, 0, 0, 0.1);
   --input-border-color: #ddd;
+  --section-bg-color: #e7f3f1;
 }
 
 body {
@@ -81,7 +82,7 @@ nav li a:hover {
 #patient-admission-section {
   flex-basis: 10%;
   border-radius: 8px;
-  background-color: #e7f3f1;
+  background-color: var(--section-bg-color);
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
@@ -138,7 +139,7 @@ nav li a:hover {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  background-color: #fffede;
+  background-color: var(--section-bg-color);
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
