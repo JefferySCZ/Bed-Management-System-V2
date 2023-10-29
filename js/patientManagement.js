@@ -163,3 +163,30 @@ async function dischargePatient(bedNumber) {
     console.error('Failed to free bed')
   }
 }
+
+async function getPatientByBedNumber(bedNumber) {
+  try {
+    const transaction = db.transaction('Patients', 'readonly')
+    const objectStore = transaction.objectStore('Patients')
+    const request = objectStore.index('bedNumber').get(Number(bedNumber))
+
+    const result = await new Promise((resolve, reject) => {
+      request.onsuccess = (event) => {
+        if (event.target.result) {
+          console.log('PatientData:', event.target.result)
+          resolve(event.target.result)
+        } else {
+          reject('No patient found with that bedNumber')
+        }
+      }
+
+      request.onerror = (event) => {
+        reject('Error retrieving data: ' + event.target.error)
+      }
+    })
+
+    return result
+  } catch (error) {
+    throw new Error('Error retrieving patient by bedNumber: ' + error)
+  }
+}

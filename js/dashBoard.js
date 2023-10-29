@@ -23,6 +23,9 @@ function initDB() {
           patients.createIndex('wardCategory', 'wardCategory', {
             unique: false,
           })
+          patients.createIndex('bedNumber', 'bedNumber', {
+            unique: false,
+          })
         }
 
         // Create Beds object store
@@ -145,15 +148,23 @@ async function refreshDatabase() {
       }
       const patient = patientData
       const li = document.createElement('li')
-      li.textContent = `ID: ${patient.patientID}, Name: ${patient.name} (Category: ${patient.wardCategory})`
 
-      if (patient.bedNumber) {
-        const bedInfo = document.createElement('span')
-        bedInfo.textContent = `(Assigned Bed #${patient.bedNumber})`
-        bedInfo.classList.add('bed-info')
-        li.appendChild(bedInfo)
-      }
+      li.classList.add('patient-name-list')
+      const idSpan = document.createElement('span')
+      idSpan.textContent = `ID: ${patient.patientID}`
+      idSpan.classList.add('patient-id')
 
+      const nameSpan = document.createElement('span')
+      nameSpan.textContent = `Name: ${patient.name}`
+      nameSpan.classList.add('patient-name')
+
+      const categorySpan = document.createElement('span')
+      categorySpan.textContent = `Category: ${patient.wardCategory}`
+      categorySpan.classList.add('patient-category')
+
+      li.appendChild(idSpan)
+      li.appendChild(nameSpan)
+      li.appendChild(categorySpan)
       waitingList.appendChild(li)
     })
   } catch (error) {

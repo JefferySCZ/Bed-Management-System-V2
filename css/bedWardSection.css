@@ -1,0 +1,112 @@
+.bed-ward-section {
+  width: 100%;
+  padding: 20px;
+  margin-top: 20px;
+  border-top: 1px solid #ccc;
+}
+
+.bed-sheet.occupied {
+  background-color: #ff6b6b;
+}
+
+.bed-sheet.sanitizing {
+  background-color: #ffe66d;
+}
+
+.bed-sheet.available {
+  background-color: #4caf50;
+}
+
+.bed-sheet.pending-sanitizing {
+  background-color: #ffa502;
+}
+
+.ward {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 25px;
+  width: 800px;
+  margin: 20px auto;
+}
+
+.ward h3 {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.bed-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+  width: 100%;
+  border: 5px solid var(--primary-bg-color);
+  border-radius: 50px;
+  justify-items: center;
+  align-items: center;
+}
+
+.bed-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 80px;
+  border: 1px solid #000;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 20px auto;
+  transition: transform 0.3s ease;
+}
+
+.bed-icon:hover {
+  transform: translateY(-5px);
+}
+
+.pillow {
+  width: 30px;
+  height: 10px;
+  background-color: #fff;
+  border: 1px solid #333;
+  border-radius: 10px 10px 0 0;
+  margin-bottom: 5px;
+}
+
+.bed-sheet {
+  width: 50px;
+  height: 65px;
+  background-color: #fffdc6;
+  border: 1px solid #000;
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.discharge-btn {
+  display: none;
+}
+
+.bed-sheet.occupied .discharge-btn {
+  display: block;
+}
+
+.tooltip-content {
+  position: absolute;
+  background-color: var(--section-bg-color); /* Background color */
+  color: #333; /* Text color */
+  padding: 5px 10px; /* Padding */
+  border-radius: 4px; /* Rounded corners */
+  font-size: 14px; /* Text size */
+  width: 200px;
+  visibility: hidden;
+  margin-bottom: 100px;
+}
+
+/* This class will make the tooltip visible */
+.tooltip-content.show {
+  visibility: visible;
+  opacity: 1;
+}

@@ -67,6 +67,17 @@ function generateWard(title, numOfBeds, startingBedNumber) {
     })
     bedSheet.appendChild(dischargeButton)
 
+    // let tooltipContainer = document.createElement('div')
+    // tooltipContainer.className = 'tooltip-container'
+    // tooltipContainer.dataset.bedNumber = startingBedNumber + i // Add this line
+
+    // bedSheet.appendChild(tooltipContainer)
+
+    let tooltipContent = document.createElement('div')
+    tooltipContent.className = 'tooltip-content'
+    // tooltipContainer.appendChild(tooltipContent)
+    bedSheet.appendChild(tooltipContent)
+
     bedRow.appendChild(bed)
   }
 
@@ -94,4 +105,78 @@ wardConfigurations.forEach((config) => {
   bedSection.appendChild(
     generateWard(config.title, config.beds, config.startNumber)
   )
+})
+
+let timerValue = 0
+const maxTime = 100 // assuming 100 seconds for full progress
+const progressBar = document.getElementById('timer-progress')
+const timerSpan = document.querySelector('.timer')
+
+// Update every second (1000 milliseconds)
+const intervalId = setInterval(() => {
+  if (timerValue < maxTime) {
+    timerValue++
+    progressBar.value = timerValue
+    timerSpan.textContent = timerValue
+  } else {
+    clearInterval(intervalId)
+  }
+}, 1000)
+
+//Tooltip part
+const tooltipContainer = document.querySelector('.tooltip-container')
+const tooltipContent = tooltipContainer.querySelector('.tooltip-content')
+
+function showTooltip(event, content) {
+  tooltipContent.innerHTML = content
+
+  tooltipContainer.classList.add('show')
+}
+
+function hideTooltip() {
+  tooltipContainer.classList.remove('show')
+}
+
+const beds = document.querySelectorAll('.bed-sheet')
+beds.forEach((bed) => {
+  bed.addEventListener('mouseover', (event) => {
+    const bedNumber = bed.dataset.bedNumber
+    const patientData = `Patient Data for Bed ${bedNumber}`
+    showTooltip(event, patientData)
+  })
+  bed.addEventListener('mouseout', () => {
+    hideTooltip()
+  })
+})
+
+document.addEventListener('DOMContentLoaded', function () {
+  // Listen for hover events on beds
+  document.querySelectorAll('.bed-sheet').forEach(function (bed) {
+    bed.addEventListener('mouseenter', async function () {
+      const bedNumber = bed.dataset.bedNumber
+
+      try {
+        const patient = await getPatientByBedNumber(bedNumber)
+        console.log('Retrieved patient:', patient)
+        if (patient) {
+          // Update tooltip content
+          const tooltip = bed.querySelector('.tooltip-content')
+          tooltip.innerHTML = `
+            <strong>Patient ID:</strong> ${patient.patientID}<br>
+            <strong>Name:</strong> ${patient.name}<br>
+            <strong>Age:</strong> ${patient.age}<br>
+            <strong>Illness:</strong> ${patient.illness}<br>
+            <!-- Add more fields as needed -->
+          `
+          tooltip.classList.add('show')
+        }
+      } catch (err) {
+        console.error('Could not retrieve patient:', err)
+      }
+    })
+    bed.addEventListener('mouseleave', function () {
+      const tooltipContainer = bed.querySelector('.tooltip-content')
+      tooltipContainer.classList.remove('show')
+    })
+  })
 })
