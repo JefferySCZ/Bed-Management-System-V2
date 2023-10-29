@@ -48,7 +48,11 @@ async function admitPatient(patient) {
       return
     }
 
-    const bedNumber = await assignBedToPatient(patientData.wardCategory)
+    const bedNumber = await assignBedToPatient(
+      patientData,
+      patientData.wardCategory
+    )
+    console.log('Data', [patientData])
 
     if (!bedNumber) {
       alert(`No bed available for ${patientData.name}for now.`)
@@ -67,8 +71,17 @@ async function admitPatient(patient) {
       return
     }
 
+    await markBedAsOccupied(
+      bedNumber,
+      patientData.patientID,
+      patientData.wardCategory
+    )
+    const bed = document.querySelector(
+      `.bed-sheet[data-bed-number='${bedNumber}']`
+    )
+    // await updateData('Patients', bed)
+
     const patientID = await addData('Patients', patientData)
-    await markBedAsOccupied(bedNumber, patientID, patientData.wardCategory)
 
     //Delete Patient from 'WaitList'
     const waitListTransaction = db.transaction(['WaitList'], 'readwrite')

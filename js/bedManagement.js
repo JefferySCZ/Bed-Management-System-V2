@@ -94,18 +94,16 @@ async function markBedAsOccupied(bedNumber, patientID, wardCategory) {
       }
     })
 
-    const status = 'Bed Occupied now'
-    const duration = '200'
-    createPatientStatus(patientID, status, duration)
+    const { li: patientLi } = createPatientStatus(patientID, 'Occupied', 120)
     await delay(BED_OCCUPANCY_TIME)
+    patientLi.remove()
 
     if (bedElement) {
       const dischargeButton = bedElement.querySelector('.discharge-btn')
       if (dischargeButton) {
         dischargeButton.style.display = 'block'
-        dischargeButton.addEventListener('click', () => {
-          dischargePatient(bedNumber)
-        })
+        // dischargeButton.addEventListener('click', () => {
+        // })
       }
     }
 

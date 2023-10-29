@@ -67,12 +67,6 @@ function generateWard(title, numOfBeds, startingBedNumber) {
     })
     bedSheet.appendChild(dischargeButton)
 
-    // let tooltipContainer = document.createElement('div')
-    // tooltipContainer.className = 'tooltip-container'
-    // tooltipContainer.dataset.bedNumber = startingBedNumber + i // Add this line
-
-    // bedSheet.appendChild(tooltipContainer)
-
     let tooltipContent = document.createElement('div')
     tooltipContent.className = 'tooltip-content'
     // tooltipContainer.appendChild(tooltipContent)

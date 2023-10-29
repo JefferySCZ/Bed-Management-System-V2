@@ -123,11 +123,7 @@ async function refreshDatabase() {
         const bedNumber = findAvailableBed()
         console.log(bedNumber)
         if (bedNumber) {
-          assignBedToPatient(
-            currentPatient,
-            bedNumber,
-            currentPatient.wardCategory
-          )
+          assignBedToPatient(currentPatient, currentPatient.wardCategory)
         } else {
           console.log('No available beds, adding patient to waiting list')
           addToWaitingList(currentPatient)

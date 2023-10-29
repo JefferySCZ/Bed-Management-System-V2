@@ -11,6 +11,7 @@
 
 .bed-sheet.sanitizing {
   background-color: #ffe66d;
+  animation: blinking 0.5s infinite;
 }
 
 .bed-sheet.available {
@@ -19,6 +20,18 @@
 
 .bed-sheet.pending-sanitizing {
   background-color: #ffa502;
+}
+
+@keyframes blinking {
+  0% {
+    background-color: #ffe66d; /* Original color */
+  }
+  50% {
+    background-color: #ffffff; /* Blink to white or another color */
+  }
+  100% {
+    background-color: #ffe66d; /* Back to original */
+  }
 }
 
 .ward {

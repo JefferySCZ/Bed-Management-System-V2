@@ -25,17 +25,18 @@ function isValidAge(age) {
 
 // Function to handle valid patient
 async function handleValidPatient(patient) {
-  const patientID = await addData('Patients', patient)
-  const status = 'Awaiting Admission'
-  const duration = 60
-  createPatientStatus(patient.patientID, status, duration)
+  const { li: patientLi } = createPatientStatus(
+    patient.patientID,
+    'Awaiting Admission',
+    60
+  )
   await delay(ADMISSION_TIME)
-  createPatientStatus.remove
+  patientLi.remove()
   const bedNumber = await assignBedToPatient(patient, patient.wardCategory)
 
   if (bedNumber) {
+    await addData('Patients', patient)
     updatePatientWithBedNumber(patient.patientID, bedNumber)
-
     console.log(`Assigned Bed #${bedNumber} to ${patient.name}`)
   } else {
     await addData('WaitList', patient)
@@ -90,20 +91,55 @@ async function dischargePatient(bedNumber) {
   const bed = document.querySelector(
     `.bed-sheet[data-bed-number='${bedNumber}']`
   )
-
-  if (!bed) {
-    console.warn(`No bed found with bed number ${bedNumber}`)
-    return
-  }
-
-  bed.classList.remove('occupied')
-  bed.classList.add('available')
-
+  const bedNum = bed.textContent
   const dischargeButton = bed.querySelector('.discharge-btn')
 
   if (dischargeButton) {
     dischargeButton.style.display = 'none'
   }
+
+  if (bed) {
+    bed.classList.remove('occupied')
+    bed.classList.add('pending-sanitizing')
+    bed.dataset.occupied = 'false'
+  }
+  const { li: sanitizingLi } = createBedStatus(
+    bedNumber,
+    'Pending Sanitizing',
+    60
+  )
+  await delay(PENDING_SANITIZING_TIME)
+  sanitizingLi.remove()
+
+  if (bed) {
+    bed.classList.remove('pending-sanitizing')
+    bed.classList.add('sanitizing')
+    bed.dataset.occupied = 'false'
+  }
+  const { li: sanitizingLi2 } = createBedStatus(
+    bedNumber,
+    'Bed Sanitizing',
+    120
+  )
+
+  await delay(SANITIZING_TIME)
+  sanitizingLi2.remove()
+
+  if (!bed) {
+    console.warn(`No bed found with bed number ${bedNumber}`)
+    return
+  }
+  if (bed) {
+    bed.classList.remove('sanitizing')
+    bed.classList.add('available')
+  }
+
+  const { li: sanitizingLi3 } = createLatestBedStatus(
+    bedNumber,
+    'Available Now'
+  )
+  await delay(10000)
+  sanitizingLi3.remove()
 
   console.log(`Patient in bed ${bedNumber} has been discharged`)
 

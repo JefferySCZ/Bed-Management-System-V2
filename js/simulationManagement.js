@@ -1,8 +1,8 @@
 // Constants
-const ADMISSION_TIME = 600
-const BED_OCCUPANCY_TIME = 1200
-const SANITIZING_TIME = 1200
-const WAITING_TIME = 600
+const ADMISSION_TIME = 2000
+const BED_OCCUPANCY_TIME = 2000
+const PENDING_SANITIZING_TIME = 2000
+const SANITIZING_TIME = 2000
 
 // Utility function to introduce delay
 function delay(ms) {
@@ -17,10 +17,7 @@ function createSpanElement(className, textContent) {
 }
 function createPatientStatus(patientID, status, duration) {
   const li = document.createElement('li')
-  const patientElement = createSpanElement(
-    `status-${patientID} patientID`,
-    `${patientID}`
-  )
+  const patientElement = createSpanElement('patientID', `${patientID}`)
   const statusElement = createSpanElement('patient-status-text', `${status}`)
   const timerElement = createSpanElement('patient-timer', `Timer:${duration}`)
 
@@ -41,6 +38,46 @@ function createPatientStatus(patientID, status, duration) {
     }
   }, 1000)
   return { li, statusElement, timerElement }
+}
+
+function createBedStatus(bedNumber, status, duration) {
+  const li = document.createElement('li')
+  const bedElement = createSpanElement('bedNumber', `Bed: ${bedNumber}`)
+
+  const statusElement = createSpanElement('bed-status-text', `${status}`)
+  const timerElement = createSpanElement('bed-timer', `Timer:${duration}`)
+
+  li.appendChild(bedElement)
+  li.appendChild(statusElement)
+  li.appendChild(timerElement)
+
+  document.querySelector('.simulation-waiting-list ul').appendChild(li)
+
+  // Initialize countdown timer
+  let remainingTime = duration // Assuming duration is in seconds
+  const intervalId = setInterval(() => {
+    timerElement.textContent = `Timer: ${remainingTime}`
+    remainingTime--
+
+    if (remainingTime < 0) {
+      clearInterval(intervalId)
+      timerElement.textContent = 'Timer: Done'
+    }
+  }, 1000)
+  return { li, statusElement, timerElement }
+}
+
+function createLatestBedStatus(bedNumber, status) {
+  const li = document.createElement('li')
+  const bedElement = createSpanElement('bedNumber', `Bed: ${bedNumber}`)
+  const statusElement = createSpanElement('bed-status-text', `${status}`)
+
+  li.appendChild(bedElement)
+  li.appendChild(statusElement)
+
+  const ul = document.querySelector('.simulation-waiting-list ul')
+  ul.appendChild(li)
+  return { li, statusElement }
 }
 
 function startCountdown(durationInSeconds, displayElement) {

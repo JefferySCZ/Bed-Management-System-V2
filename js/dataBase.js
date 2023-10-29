@@ -15,6 +15,18 @@ async function addData(storeName, data) {
     }
   })
 }
+async function updateData(storeName, data) {
+  try {
+    const transaction = db.transaction([storeName], 'readwrite')
+    const store = transaction.objectStore(storeName)
+    await store.put(data)
+    return Promise.resolve()
+  } catch (error) {
+    return Promise.reject(
+      new Error(`Error adding data to ${storeName}: ${error}`)
+    )
+  }
+}
 async function updatePatientWithBedNumber(patientID, bedNumber) {
   try {
     const transaction = db.transaction(['Patients'], 'readwrite')
