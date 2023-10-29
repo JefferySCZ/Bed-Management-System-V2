@@ -113,7 +113,7 @@ async function refreshDatabase() {
         continue // Skip to next iteration
       }
 
-      if (currentPatient.bedNumber) {
+      if (currentPatient.bedNumber && currentPatient.occupied) {
         markBedAsOccupied(
           currentPatient.bedNumber,
           currentPatient.patientID,

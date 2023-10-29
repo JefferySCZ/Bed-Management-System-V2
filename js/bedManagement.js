@@ -8,7 +8,7 @@ function findAvailableBed() {
   return null
 }
 
-async function assignBedToPatient(wardCategory) {
+async function assignBedToPatient(patient, wardCategory) {
   const BED_CONFIG = {
     'Intensive Care': { startNum: 101, count: 2 },
     'Infectious Disease': { startNum: 201, count: 10 },
@@ -29,7 +29,7 @@ async function assignBedToPatient(wardCategory) {
       const isOccupied = await isBedOccupied(i)
       console.log(`Is bed ${i} occupied?`, isOccupied)
       if (!isOccupied) {
-        await markBedAsOccupied(i)
+        await markBedAsOccupied(i, patient.patientID, wardCategory)
         return i
       }
     }
@@ -41,8 +41,13 @@ async function assignBedToPatient(wardCategory) {
   return null
 }
 
-// Mark the bed status as occupied
 async function markBedAsOccupied(bedNumber, patientID, wardCategory) {
+  console.log('Inside markBedAsOccupied: ', patientID, wardCategory)
+
+  if (!db) {
+    console.error('Database not initialized')
+    return
+  }
   const bedElement = document.querySelector(
     `.bed-sheet[data-bed-number='${bedNumber}']`
   )
@@ -54,7 +59,7 @@ async function markBedAsOccupied(bedNumber, patientID, wardCategory) {
 
     const dischargeButton = bedElement.querySelector('.discharge-btn')
     if (dischargeButton) {
-      dischargeButton.style.display = 'block'
+      dischargeButton.style.display = 'none'
     }
   }
 
@@ -67,22 +72,44 @@ async function markBedAsOccupied(bedNumber, patientID, wardCategory) {
     patientID,
     wardCategory,
   }
-  console.log('Data to be saved:', bedData) // Debugging line
+  console.log('Data to be saved:', bedData)
 
   try {
-    const bedUpdateRequest = bedStore.put(bedData)
+    await new Promise((resolve, reject) => {
+      const bedUpdateRequest = bedStore.put(bedData)
 
-    bedUpdateRequest.addEventListener('success', () => {
-      console.log('Bed successfully marked as occupied')
+      bedUpdateRequest.addEventListener('success', () => {
+        console.log('Bed successfully marked as occupied')
+        resolve()
+      })
+
+      bedUpdateRequest.addEventListener('error', (event) => {
+        console.error('Error marking bed as occupied', event)
+        reject(event)
+      })
+
+      transaction.onerror = function (event) {
+        console.error('Transaction failed:', event)
+        reject(event)
+      }
     })
 
-    bedUpdateRequest.addEventListener('error', (event) => {
-      console.error('Error marking bed as occupied', event)
-    })
+    const status = 'Bed Occupied now'
+    const duration = '200'
+    createPatientStatus(patientID, status, duration)
+    await delay(BED_OCCUPANCY_TIME)
 
-    transaction.onerror = function (event) {
-      console.error('Transaction failed:', event)
+    if (bedElement) {
+      const dischargeButton = bedElement.querySelector('.discharge-btn')
+      if (dischargeButton) {
+        dischargeButton.style.display = 'block'
+        dischargeButton.addEventListener('click', () => {
+          dischargePatient(bedNumber)
+        })
+      }
     }
+
+    alert(`Patient in Bed #${bedNumber} can now be discharged`)
 
     return true
   } catch (error) {

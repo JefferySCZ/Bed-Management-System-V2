@@ -25,16 +25,22 @@ function isValidAge(age) {
 
 // Function to handle valid patient
 async function handleValidPatient(patient) {
-  const bedNumber = await assignBedToPatient(patient.wardCategory)
+  const patientID = await addData('Patients', patient)
+  const status = 'Awaiting Admission'
+  const duration = 60
+  createPatientStatus(patient.patientID, status, duration)
+  await delay(ADMISSION_TIME)
+  createPatientStatus.remove
+  const bedNumber = await assignBedToPatient(patient, patient.wardCategory)
 
   if (bedNumber) {
-    const patientID = await addData('Patients', patient)
-    updatePatientWithBedNumber(patientID, bedNumber)
-    markBedAsOccupied(bedNumber, patientID, patient.wardCategory)
+    updatePatientWithBedNumber(patient.patientID, bedNumber)
+
     console.log(`Assigned Bed #${bedNumber} to ${patient.name}`)
   } else {
     await addData('WaitList', patient)
     await addToWaitingList(patient)
+
     console.log(`No bed available for ${patient.name}. Added to waiting list.`)
     alert(`No bed available for ${patient.name}. Added to waiting list.`)
   }

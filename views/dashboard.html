@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/css/patientSection.css" />
     <link rel="stylesheet" href="/css/waitListSection.css" />
     <link rel="stylesheet" href="/css/bedWardSection.css" />
+    <link rel="stylesheet" href="/css/simulationSection.css" />
 
     <title>Dashboard & Patient Admission</title>
   </head>
@@ -116,15 +117,11 @@
 
           <div class="simulation-control-panel">
             <h3>Simulation Control:</h3>
-
-            <div class="timer-display">Timer: <span class="timer">0</span></div>
-            <div class="progress-container">
-              <progress id="timer-progress" max="100" value="0"></progress>
-            </div>
-
-            <div class="simulation-status">
-              <h4>Simulation Status:</h4>
-              <p class="status-text">Awaiting Start...</p>
+            <div class="patient-status-section"></div>
+            <div class="scrollable-list">
+              <div class="simulation-waiting-list">
+                <ul></ul>
+              </div>
             </div>
           </div>
         </section>
@@ -146,6 +143,7 @@
       <script src="../js/patientManagement.js"></script>
       <script src="../js/bedManagement.js"></script>
       <script src="../js/waitListManagement.js"></script>
+      <script src="../js/simulationManagement.js"></script>
     </div>
   </body>
 </html>

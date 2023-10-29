@@ -107,22 +107,6 @@ wardConfigurations.forEach((config) => {
   )
 })
 
-let timerValue = 0
-const maxTime = 100 // assuming 100 seconds for full progress
-const progressBar = document.getElementById('timer-progress')
-const timerSpan = document.querySelector('.timer')
-
-// Update every second (1000 milliseconds)
-const intervalId = setInterval(() => {
-  if (timerValue < maxTime) {
-    timerValue++
-    progressBar.value = timerValue
-    timerSpan.textContent = timerValue
-  } else {
-    clearInterval(intervalId)
-  }
-}, 1000)
-
 //Tooltip part
 const tooltipContainer = document.querySelector('.tooltip-container')
 const tooltipContent = tooltipContainer.querySelector('.tooltip-content')
