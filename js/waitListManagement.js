@@ -39,24 +39,11 @@ async function admitPatient(patient) {
       console.log('No patients in the waiting list.')
       return
     }
-
     const waitingList = document.querySelector('.waiting-list ul')
     const admittedPatientLi = waitingList.firstChild
 
     if (!admittedPatientLi) {
       console.log('No patients in the waiting list.')
-      return
-    }
-
-    const bedNumber = await assignBedToPatient(
-      patientData,
-      patientData.wardCategory
-    )
-    console.log('Data', [patientData])
-
-    if (!bedNumber) {
-      alert(`No bed available for ${patientData.name}for now.`)
-      console.log('No available Bed')
       return
     }
 
@@ -71,35 +58,75 @@ async function admitPatient(patient) {
       return
     }
 
-    await markBedAsOccupied(
-      bedNumber,
-      patientData.patientID,
+    const bedNumber = await assignBedToPatient(
+      patientData,
       patientData.wardCategory
     )
-    const bed = document.querySelector(
-      `.bed-sheet[data-bed-number='${bedNumber}']`
-    )
-    // await updateData('Patients', bed)
+    bedOccupancyTime(patientData.patientID, bedNumber)
 
-    const patientID = await addData('Patients', patientData)
+    console.log('Bed Number:', bedNumber)
+    console.log('Data', [patientData])
+
+    if (!bedNumber) {
+      alert(`No bed available for ${patientData.name}for now.`)
+      console.log('No available Bed')
+      return
+    }
+
+    // markBedAsOccupied(
+    //   bedNumber,
+    //   patientData.patientID,
+    //   patientData.wardCategory
+    // )
+    // const bedData = await getData('Beds', bedNumber)
+    // console.log('Bed data:', bedData)
+
+    // if (!bedData) {
+    //   console.log(`Bed ${bedNumber} not found in database.`)
+    //   return
+    // }
+
+    const patientTransaction = db.transaction(['Patients'], 'readwrite')
+    const patientStore = patientTransaction.objectStore('Patients')
+    const patientRequest = await patientStore.put({
+      bedNumber,
+      ...patientData,
+    })
+    patientRequest.onsuccess = () => {
+      console.log(
+        'Patient added to database successfully',
+        patientRequest.result
+      )
+    }
+
+    patientRequest.onerror = () => {
+      console.log('Failed to add patient to database', patientRequest.error)
+    }
 
     //Delete Patient from 'WaitList'
+
     const waitListTransaction = db.transaction(['WaitList'], 'readwrite')
     const waitListStoreDelete = waitListTransaction.objectStore('WaitList')
     const waitListIndexDelete = waitListStoreDelete.index('patientID')
-    const waitListRequestDelete = waitListIndexDelete.getKey(patientID)
+    const waitListRequestDelete = waitListIndexDelete.getKey(
+      patientData.patientID
+    )
 
     waitListRequestDelete.onsuccess = () => {
       const waitListKey = waitListRequestDelete.result
       if (waitListKey != undefined) {
         waitListStoreDelete.delete(waitListKey)
-        console.log('Patient deleted from database successfully')
+        console.log('Patient has been removed from the waiting list')
       }
     }
+    waitListRequestDelete.onerror = () => {
+      console.log(
+        'Error deleting patient from WaitList database:',
+        waitListRequestDelete.error
+      )
+    }
 
-    console.log(
-      `Patient ID ${patientID} has been admitted， and assigned to bed #${bedNumber}`
-    )
+    console.log(`Patient has been removed from the waiting list`)
   } catch (error) {
     console.error('Occurred an error:', error)
   }

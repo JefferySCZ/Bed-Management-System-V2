@@ -15,6 +15,7 @@ async function addData(storeName, data) {
     }
   })
 }
+
 async function updateData(storeName, data) {
   try {
     const transaction = db.transaction([storeName], 'readwrite')

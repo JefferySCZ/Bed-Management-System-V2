@@ -35,6 +35,7 @@ async function handleValidPatient(patient) {
   const bedNumber = await assignBedToPatient(patient, patient.wardCategory)
 
   if (bedNumber) {
+    bedOccupancyTime(patient.patientID, bedNumber)
     await addData('Patients', patient)
     updatePatientWithBedNumber(patient.patientID, bedNumber)
     console.log(`Assigned Bed #${bedNumber} to ${patient.name}`)
@@ -138,7 +139,7 @@ async function dischargePatient(bedNumber) {
     bedNumber,
     'Available Now'
   )
-  await delay(10000)
+  await delay(5000)
   sanitizingLi3.remove()
 
   console.log(`Patient in bed ${bedNumber} has been discharged`)

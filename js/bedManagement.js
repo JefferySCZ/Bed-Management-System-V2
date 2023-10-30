@@ -48,6 +48,11 @@ async function markBedAsOccupied(bedNumber, patientID, wardCategory) {
     console.error('Database not initialized')
     return
   }
+
+  if (!bedNumber || !patientID || !wardCategory) {
+    console.error('Invalid input')
+    return
+  }
   const bedElement = document.querySelector(
     `.bed-sheet[data-bed-number='${bedNumber}']`
   )
@@ -62,57 +67,42 @@ async function markBedAsOccupied(bedNumber, patientID, wardCategory) {
       dischargeButton.style.display = 'none'
     }
   }
+  console.log('Bed successfully marked as occupied')
 
   const transaction = db.transaction(['Beds'], 'readwrite')
   const bedStore = transaction.objectStore('Beds')
-
-  const bedData = {
-    bedNumber,
-    occupied: true,
-    patientID,
-    wardCategory,
-  }
-  console.log('Data to be saved:', bedData)
-
   try {
-    await new Promise((resolve, reject) => {
-      const bedUpdateRequest = bedStore.put(bedData)
-
-      bedUpdateRequest.addEventListener('success', () => {
-        console.log('Bed successfully marked as occupied')
-        resolve()
-      })
-
-      bedUpdateRequest.addEventListener('error', (event) => {
-        console.error('Error marking bed as occupied', event)
-        reject(event)
-      })
-
-      transaction.onerror = function (event) {
-        console.error('Transaction failed:', event)
-        reject(event)
-      }
-    })
-
-    const { li: patientLi } = createPatientStatus(patientID, 'Occupied', 120)
-    await delay(BED_OCCUPANCY_TIME)
-    patientLi.remove()
-
-    if (bedElement) {
-      const dischargeButton = bedElement.querySelector('.discharge-btn')
-      if (dischargeButton) {
-        dischargeButton.style.display = 'block'
-        // dischargeButton.addEventListener('click', () => {
-        // })
-      }
+    const bedData = {
+      bedNumber,
+      occupied: true,
+      patientID,
+      wardCategory,
     }
-
-    alert(`Patient in Bed #${bedNumber} can now be discharged`)
+    await bedStore.put(bedData)
+    console.log('Data to be saved:', bedData)
 
     return true
   } catch (error) {
     console.error('Error updating bed status in the database', error)
     return false
+  }
+}
+
+async function bedOccupancyTime(patientID, bedNumber) {
+  const { li: patientLi } = createPatientStatus(patientID, 'Occupied', 120)
+  await delay(BED_OCCUPANCY_TIME)
+  patientLi.remove()
+
+  const bedElement = document.querySelector(
+    `.bed-sheet[data-bed-number='${bedNumber}']`
+  )
+
+  if (bedElement) {
+    const dischargeButton = bedElement.querySelector('.discharge-btn')
+    if (dischargeButton) {
+      dischargeButton.style.display = 'block'
+    }
+    alert(`Patient in Bed #${bedNumber} can now be discharged`)
   }
 }
 
