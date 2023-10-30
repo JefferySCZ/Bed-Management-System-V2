@@ -1,5 +1,19 @@
 //Create (Add Patient)
 // Function to get patient details from form
+function resetForm() {
+  const form = document.querySelector('#patient-admission-form')
+  const patientIDInput = document.querySelector('#patient-ID')
+
+  // Save the patient ID value before resetting the form
+  const patientID = patientIDInput.value
+
+  // Reset the form, excluding the patient ID input field
+  form.reset()
+
+  // Restore the patient ID value
+  patientIDInput.value = patientID
+}
+
 const MAX_ID_VALUE = 1000
 function generateRandomID() {
   return 'PAT_' + Math.floor(Math.random() * MAX_ID_VALUE)
@@ -158,6 +172,7 @@ async function dischargePatient(bedNumber) {
   if (bed) {
     bed.classList.remove('occupied')
     bed.classList.add('pending-sanitizing')
+    bed.dataset.occupied = 'true'
   }
   const { li: sanitizingLi } = createBedStatus(
     bedNumber,
@@ -170,6 +185,7 @@ async function dischargePatient(bedNumber) {
   if (bed) {
     bed.classList.remove('pending-sanitizing')
     bed.classList.add('sanitizing')
+    bed.dataset.occupied = 'true'
   }
   const { li: sanitizingLi2 } = createBedStatus(
     bedNumber,
@@ -180,10 +196,6 @@ async function dischargePatient(bedNumber) {
   await delay(SANITIZING_TIME)
   sanitizingLi2.remove()
 
-  if (!bed) {
-    console.warn(`No bed found with bed number ${bedNumber}`)
-    return
-  }
   if (bed) {
     bed.classList.remove('sanitizing')
     bed.classList.add('available')
