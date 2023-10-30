@@ -89,70 +89,10 @@ document
   })
 
 async function dischargePatient(bedNumber) {
-  const bed = document.querySelector(
-    `.bed-sheet[data-bed-number='${bedNumber}']`
-  )
-  const bedNum = bed.textContent
-  const dischargeButton = bed.querySelector('.discharge-btn')
-
-  if (dischargeButton) {
-    dischargeButton.style.display = 'none'
-  }
-
-  if (bed) {
-    bed.classList.remove('occupied')
-    bed.classList.add('pending-sanitizing')
-    bed.dataset.occupied = 'false'
-  }
-  const { li: sanitizingLi } = createBedStatus(
-    bedNumber,
-    'Pending Sanitizing',
-    60
-  )
-  await delay(PENDING_SANITIZING_TIME)
-  sanitizingLi.remove()
-
-  if (bed) {
-    bed.classList.remove('pending-sanitizing')
-    bed.classList.add('sanitizing')
-    bed.dataset.occupied = 'false'
-  }
-  const { li: sanitizingLi2 } = createBedStatus(
-    bedNumber,
-    'Bed Sanitizing',
-    120
-  )
-
-  await delay(SANITIZING_TIME)
-  sanitizingLi2.remove()
-
-  if (!bed) {
-    console.warn(`No bed found with bed number ${bedNumber}`)
-    return
-  }
-  if (bed) {
-    bed.classList.remove('sanitizing')
-    bed.classList.add('available')
-  }
-
-  const { li: sanitizingLi3 } = createLatestBedStatus(
-    bedNumber,
-    'Available Now'
-  )
-  await delay(5000)
-  sanitizingLi3.remove()
-
-  console.log(`Patient in bed ${bedNumber} has been discharged`)
-
   const transaction = db.transaction(['Beds'], 'readonly')
-
   const bedStore = transaction.objectStore('Beds')
-  console.log('Bed Store:', bedStore)
-
   const bedRequest = bedStore.get(Number(bedNumber))
-  console.log('Bed Request:', bedRequest)
-
-  let patientID
+  // let patientID
 
   await new Promise((resolve, reject) => {
     bedRequest.onsuccess = function (event) {
@@ -205,6 +145,57 @@ async function dischargePatient(bedNumber) {
   bedRequestDelete.onerror = () => {
     console.error('Failed to free bed')
   }
+  console.log(`Patient in bed ${bedNumber} has been discharged`)
+  const bed = document.querySelector(
+    `.bed-sheet[data-bed-number='${bedNumber}']`
+  )
+  const dischargeButton = bed.querySelector('.discharge-btn')
+
+  if (dischargeButton) {
+    dischargeButton.style.display = 'none'
+  }
+
+  if (bed) {
+    bed.classList.remove('occupied')
+    bed.classList.add('pending-sanitizing')
+  }
+  const { li: sanitizingLi } = createBedStatus(
+    bedNumber,
+    'Pending Sanitizing',
+    60
+  )
+  await delay(PENDING_SANITIZING_TIME)
+  sanitizingLi.remove()
+
+  if (bed) {
+    bed.classList.remove('pending-sanitizing')
+    bed.classList.add('sanitizing')
+  }
+  const { li: sanitizingLi2 } = createBedStatus(
+    bedNumber,
+    'Bed Sanitizing',
+    120
+  )
+
+  await delay(SANITIZING_TIME)
+  sanitizingLi2.remove()
+
+  if (!bed) {
+    console.warn(`No bed found with bed number ${bedNumber}`)
+    return
+  }
+  if (bed) {
+    bed.classList.remove('sanitizing')
+    bed.classList.add('available')
+    bed.dataset.occupied = 'false'
+  }
+
+  const { li: sanitizingLi3 } = createLatestBedStatus(
+    bedNumber,
+    'Available Now'
+  )
+  await delay(BED_AVAILABILITY_STATUS)
+  sanitizingLi3.remove()
 }
 
 async function getPatientByBedNumber(bedNumber) {

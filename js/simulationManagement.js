@@ -3,6 +3,7 @@ const ADMISSION_TIME = 2000
 const BED_OCCUPANCY_TIME = 2000
 const PENDING_SANITIZING_TIME = 2000
 const SANITIZING_TIME = 2000
+const BED_AVAILABILITY_STATUS = 2000
 
 // Utility function to introduce delay
 function delay(ms) {
