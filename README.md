@@ -23,9 +23,9 @@ This system allows hospital staff to keep track of available beds, admit patient
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
-## License
+<!-- ## License
 
-This project is licensed under the MIT License - see the `LICENSE.md` file for details.
+This project is licensed under the MIT License - see the `LICENSE.md` file for details. -->
 
 ## Support and Contact
 

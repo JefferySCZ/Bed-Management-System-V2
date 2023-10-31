@@ -7,6 +7,7 @@ const io = require('socket.io')(http)
 app.use('/view', express.static('view'))
 app.use('/css', express.static('css'))
 app.use('/js', express.static('js'))
+app.use(express.urlencoded({ extended: true }))
 
 io.on('connection', (socket) => {
   console.log('A user connected')
@@ -16,12 +17,21 @@ io.on('connection', (socket) => {
 })
 
 app.get('/', (_req, res) => {
+  res.sendFile(__dirname + '/views/loginPage.html', (err) => {
+    if (err) {
+      res.status(500).send(err)
+    }
+  })
+})
+app.post('/views', (req, res) => {
+  // Handle the POST request here
   res.sendFile(__dirname + '/views/dashboard.html', (err) => {
     if (err) {
       res.status(500).send(err)
     }
   })
 })
+
 console.log('__dirname is:', __dirname)
 http.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`)
