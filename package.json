@@ -1,11 +1,11 @@
 {
-  "name": "hospital-bed-management-latest",
+  "name": "hospital-bed-management",
   "version": "1.0.0",
   "description": "",
   "main": "js/dashBoard.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server.js "
+    "start": "nodemon app.js "
   },
   "keywords": [],
   "author": "",
