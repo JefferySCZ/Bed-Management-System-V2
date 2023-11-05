@@ -10,7 +10,14 @@ This system allows hospital staff to keep track of available beds, admit patient
 
 1. Clone this repository: `git clone [https://github.com/JefferySCZ/Bed-Management-System]`.
 2. Navigate to the project directory: `cd hospital-bed-management`.
-3. Install the required dependencies: `npm install` (assuming you're using npm).
+   mkdir my-report-project
+   cd my-report-project
+   npm init -y
+   npm install express body-parser --save
+   npm install ws
+
+3. Install the required dependencies: `npm install express body-parser --save
+` (assuming you're using npm).
 4. Run the application: `npm start`.
 
 ## Usage

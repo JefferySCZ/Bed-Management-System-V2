@@ -50,13 +50,17 @@ function initDB() {
       }
     }
 
+    // Handle success event of the request
     request.onsuccess = function (event) {
       try {
         console.log('Database opened successfully')
+
         db = event.target.result
+
         resolve()
       } catch (error) {
         console.log('An error occurred while opening the database:', error)
+
         reject('There was an error while opening the database')
       }
     }
@@ -71,12 +75,12 @@ function initDB() {
   })
 }
 
-//DOM
+// Wait for the DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function () {
-  console.log('DOM is ready')
-
+  // Initialize the database
   initDB()
     .then(() => {
+      // Generate a random patient ID and set it as the value of the 'patient-ID' element
       const initialPatientID = generateRandomID()
       document.getElementById('patient-ID').value = initialPatientID
       return refreshDatabase()
@@ -89,6 +93,11 @@ document.addEventListener('DOMContentLoaded', function () {
     })
 })
 
+/**
+ * Refreshes the database by fetching data from the 'Beds' and 'WaitList' object stores,
+ * handles patients with bed numbers or assigns available beds,
+ * and populates the waiting list with waiting patients.
+ */
 async function refreshDatabase() {
   try {
     // Fetch data from Patients and WaitList object stores
@@ -103,9 +112,6 @@ async function refreshDatabase() {
       throw new Error('Failed to fetch waiting patients')
     }
 
-    console.log('Patients:', patients)
-    console.log('Waiting Patients:', waitingPatients)
-
     // Handle patients with bed numbers or assign available beds
     for (const currentPatient of patients) {
       if (!currentPatient) {
@@ -119,6 +125,7 @@ async function refreshDatabase() {
           currentPatient.patientID,
           currentPatient.wardCategory
         )
+        domBedOccupancyTime(currentPatient.bedNumber)
       } else {
         const bedNumber = findAvailableBed()
         console.log(bedNumber)

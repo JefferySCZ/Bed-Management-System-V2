@@ -14,11 +14,17 @@ function resetForm() {
   patientIDInput.value = patientID
 }
 
-const MAX_ID_VALUE = 1000
+//Generates a random ID.
 function generateRandomID() {
-  return 'PAT_' + Math.floor(Math.random() * MAX_ID_VALUE)
+  const MAX_ID_VALUE = 10000 // Maximum value for the random ID
+  const prefix = 'PAT_' // Prefix for the generated ID
+
+  const randomID = prefix + Math.floor(Math.random() * MAX_ID_VALUE)
+
+  return randomID
 }
 
+// Retrieves the details of a patient from the input fields.
 function getPatientDetails() {
   return {
     patientID: document.getElementById('patient-ID').value,
@@ -37,31 +43,48 @@ function isValidAge(age) {
   return !(age === 'Invalid DOB' || age === 'Age exceeds valid range')
 }
 
-// Function to handle valid patient
+//Handles the processing of a valid patient.
 async function handleValidPatient(patient) {
+  // Create patient status element
   const { li: patientLi } = createPatientStatus(
     patient.patientID,
     'Awaiting Admission',
     60
   )
+
+  // Delay admission time
   await delay(ADMISSION_TIME)
+
+  // Remove patient status element
   patientLi.remove()
+
+  // Assign bed to patient
   const bedNumber = await assignBedToPatient(patient, patient.wardCategory)
 
   if (bedNumber) {
+    // Update bed occupancy time
     bedOccupancyTime(patient.patientID, bedNumber)
+
+    // Add patient data
     await addData('Patients', patient)
+
+    // Update patient with bed number
     updatePatientWithBedNumber(patient.patientID, bedNumber)
+
+    // Log assigned bed number
     console.log(`Assigned Bed #${bedNumber} to ${patient.name}`)
   } else {
+    // if no bed, Add patient to wait list object store
     await addData('WaitList', patient)
     await addToWaitingList(patient)
 
+    // Log and display message for no available bed
     console.log(`No bed available for ${patient.name}. Added to waiting list.`)
     alert(`No bed available for ${patient.name}. Added to waiting list.`)
   }
 }
 
+//Check if the given ID is unique in the 'Patients' object store.
 async function isUniqueID(id) {
   const transaction = db.transaction(['Patients'], 'readonly')
   const store = transaction.objectStore('Patients')
@@ -69,54 +92,68 @@ async function isUniqueID(id) {
 
   const result = await new Promise((resolve, reject) => {
     request.onsuccess = () => resolve(request.result)
+
     request.onerror = (event) => reject(event)
   })
 
-  return result === undefined // returns true if ID is unique
+  return result === undefined
 }
 
-// Main function to add patient
+//Adds a patient to the system.
 async function addPatient() {
+  // Get patient details
   const patient = getPatientDetails()
 
+  // Check if patient ID is unique, generate random ID until it is unique
   let isUnique = await isUniqueID(patient.patientID)
   while (!isUnique) {
     patient.patientID = generateRandomID()
     isUnique = await isUniqueID(patient.patientID)
   }
 
+  // If the patient age is valid, handle the patient and store it in the local storage
   if (isValidAge(patient.age)) {
     await handleValidPatient(patient)
+    const existingPatients = JSON.parse(localStorage.getItem('patients')) || []
+    existingPatients.push(patient)
+    localStorage.setItem('patients', JSON.stringify(existingPatients))
   } else {
+    // Log an error and show an alert if the age or DOB is invalid
     console.error('Cannot add patient with invalid age or DOB')
     alert('Invalid DOB or age. Please check and try again')
   }
 }
 
-document
-  .getElementById('patient-admission-form')
-  .addEventListener('submit', async function (event) {
+// Get the patient admission form element
+const patientAdmissionForm = document.getElementById('patient-admission-form')
+
+// Check if the patient admission form exists
+if (patientAdmissionForm) {
+  patientAdmissionForm.addEventListener('submit', async function (event) {
     event.preventDefault()
+
+    // Call the addPatient function
     addPatient()
     this.reset()
     document.getElementById('patient-ID').value = generateRandomID()
   })
+}
 
+//Discharge a patient from the system and update the UI
 async function dischargePatient(bedNumber) {
   const transaction = db.transaction(['Beds'], 'readonly')
   const bedStore = transaction.objectStore('Beds')
   const bedRequest = bedStore.get(Number(bedNumber))
-  // let patientID
 
   await new Promise((resolve, reject) => {
     bedRequest.onsuccess = function (event) {
-      const bedRecord = event.target.result // This should be the full record for the bed
+      const bedRecord = event.target.result
 
       if (bedRecord) {
         if (bedRecord.patientID) {
           patientID = bedRecord.patientID
         } else if (bedRecord.patient && bedRecord.patient.patientID) {
-          patientID = bedRecord.patient.patientID // Nested patient object
+          patientID = bedRecord.patient.patientID
         }
       }
 
@@ -142,7 +179,7 @@ async function dischargePatient(bedNumber) {
   patientRequest.onerror = () => {
     console.error('Failed to remove patient')
   }
-
+  //Delete the Patient data from the 'Beds' object store
   const bedTransaction = db.transaction(['Beds'], 'readwrite')
   const bedStoreDelete = bedTransaction.objectStore('Beds')
   const bedIndexDelete = bedStoreDelete.index('patientID')
@@ -168,7 +205,8 @@ async function dischargePatient(bedNumber) {
   if (dischargeButton) {
     dischargeButton.style.display = 'none'
   }
-
+  //After discharge, update the UI to pending sanitizing, sanitizing, and available
+  //Update the bed UI and simulation UI at the same time
   if (bed) {
     bed.classList.remove('occupied')
     bed.classList.add('pending-sanitizing')
@@ -210,6 +248,7 @@ async function dischargePatient(bedNumber) {
   sanitizingLi3.remove()
 }
 
+//Retrieves a patient by their bed number.
 async function getPatientByBedNumber(bedNumber) {
   try {
     const transaction = db.transaction('Patients', 'readonly')

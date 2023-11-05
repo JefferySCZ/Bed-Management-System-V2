@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/css/style.css" />
     <link rel="stylesheet" href="/css/dashboard.css" />
     <link rel="stylesheet" href="/css/patientSection.css" />
     <link rel="stylesheet" href="/css/waitListSection.css" />
@@ -13,12 +14,16 @@
   </head>
   <body>
     <header>
+      <img src="/pics/UOP.logo.jpeg" alt="Logo" id="logo" />
+
       <h1>Hospital Bed Management System</h1>
     </header>
 
     <nav>
       <ul>
-        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="/views/dashboard.html">Dashboard</a></li>
+        <li><a href="/views/reportPage.html">Report</a></li>
+        <li class="logout"><a href="/">Logout</a></li>
       </ul>
     </nav>
 
@@ -104,7 +109,7 @@
         </section>
 
         <section class="admission-process-section">
-          <div class="waitiling-list-section">
+          <div class="waiting-list-section">
             <h3>Patients Waiting List:</h3>
             <button onclick="admitPatient()">Admit Patient</button>
             <div class="scrollable-list">
@@ -136,10 +141,10 @@
 
       <footer>Hospital Bed Management System © 2023</footer>
 
-      <script src="../js/utils.js"></script>
       <script src="../js/dashBoard.js"></script>
-      <script src="../js/dataBase.js"></script>
       <script src="../js/patientManagement.js"></script>
+      <script src="../js/utils.js"></script>
+      <script src="../js/dataBase.js"></script>
       <script src="../js/bedManagement.js"></script>
       <script src="../js/waitListManagement.js"></script>
       <script src="../js/simulationManagement.js"></script>

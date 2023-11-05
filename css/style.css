@@ -1,0 +1,81 @@
+/* dashboard.css */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --primary-bg-color: #01a7ac;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --input-border-color: #ddd;
+  --section-bg-color: #e7f3f1;
+  --text-color: #333;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  color: var(--text-color);
+}
+
+h1 {
+  margin-bottom: 0.5rem;
+  color: var(--primary-bg-color);
+}
+
+.content-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  max-width: 1300px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 2px 8px var(--shadow-color);
+  overflow: auto;
+}
+
+header,
+nav,
+main,
+footer {
+  padding: 20px;
+}
+nav {
+  background-color: var(--primary-bg-color);
+  overflow: hidden;
+}
+nav ul {
+  padding: 0;
+  list-style: none;
+}
+
+nav ul li {
+  display: inline;
+  margin-right: 10px;
+}
+nav ul li a {
+  color: white;
+  text-decoration: none;
+  padding: 10px 15px;
+  display: inline-block;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+nav ul li.logout {
+  float: right;
+}
+
+nav ul li a:hover,
+nav ul li a:focus {
+  background-color: #f9f9f9;
+  color: black;
+}
+
+#logo {
+  height: 50px;
+  width: auto;
+  float: left;
+}

@@ -3,27 +3,36 @@ document.addEventListener('DOMContentLoaded', function () {
   document
     .getElementById('patient-DOB')
     .addEventListener('change', function (event) {
+      // Get the date of birth from the input value
       const dob = new Date(this.value)
       const now = new Date()
+      // Check if the date of birth is in the future
 
       if (dob > now) {
         document.getElementById('patient-age').value = 'Invalid DOB'
         return
       }
+      // Calculate the age difference in milliseconds
       const ageDiff = now - dob
+      // Convert the age difference to a Date object
       const ageDate = new Date(ageDiff)
+      // Get the year component of the age difference
       const age = Math.abs(ageDate.getUTCFullYear() - 1970)
 
+      // Check if the calculated age exceeds the valid range
       if (age > 125) {
         document.getElementById('patient-age').value = 'Age exceeds valid range'
         return
       }
-
+      // Display the calculated age in years
       document.getElementById('patient-age').value = age + ' years old'
     })
 })
 
+//Generates a ward element with beds.
+
 function generateWard(title, numOfBeds, startingBedNumber) {
+  // Create the ward element
   let ward = document.createElement('div')
   ward.className = 'ward'
 
@@ -31,17 +40,22 @@ function generateWard(title, numOfBeds, startingBedNumber) {
   h3.textContent = title
   ward.appendChild(h3)
 
+  // Create the container for the bed rows
   let bedRow = document.createElement('div')
   bedRow.className = 'bed-row'
 
+  // Generate each bed element
   for (let i = 0; i < numOfBeds; i++) {
+    // Create the bed element
     let bed = document.createElement('div')
     bed.className = 'bed-icon'
 
+    // Create the pillow element
     let pillow = document.createElement('div')
     pillow.className = 'pillow'
     bed.appendChild(pillow)
 
+    // Create the bed sheet element
     let bedSheet = document.createElement('div')
     bedSheet.className = 'bed-sheet'
     bedSheet.dataset.occupied = 'false'
@@ -49,27 +63,27 @@ function generateWard(title, numOfBeds, startingBedNumber) {
     bedSheet.classList.add(
       bedSheet.dataset.occupied === 'true' ? 'occupied' : 'available'
     )
-
     bed.appendChild(bedSheet)
 
+    // Create the bed number element
     let bedNumberSpan = document.createElement('span')
     bedNumberSpan.className = 'bed-number'
     bedNumberSpan.textContent = startingBedNumber + i
     bed.appendChild(bedNumberSpan)
 
-    //Discharge button
+    // Create the discharge button
     let dischargeButton = document.createElement('button')
     dischargeButton.className = 'discharge-btn'
     dischargeButton.textContent = 'Discharge'
-    // Hidden button when the bed is unoccupied
+    // Add event listener for discharge button click
     dischargeButton.addEventListener('click', function () {
       dischargePatient(bedSheet.dataset.bedNumber)
     })
     bedSheet.appendChild(dischargeButton)
 
+    // Create the tooltip content element
     let tooltipContent = document.createElement('div')
     tooltipContent.className = 'tooltip-content'
-    // tooltipContainer.appendChild(tooltipContent)
     bedSheet.appendChild(tooltipContent)
 
     bedRow.appendChild(bed)
@@ -77,10 +91,12 @@ function generateWard(title, numOfBeds, startingBedNumber) {
 
   ward.appendChild(bedRow)
 
+  // Return the generated ward element
   return ward
 }
 
 let bedSection = document.querySelector('.bed-ward-section')
+// Define an array of ward configurations
 const wardConfigurations = [
   {
     title: 'Intensive Care Ward (10 beds) - Level 1',
@@ -94,8 +110,9 @@ const wardConfigurations = [
   },
   { title: 'General Ward (20 beds) - Level 3', beds: 20, startNumber: 301 },
 ]
-
+// Iterate over the ward configurations
 wardConfigurations.forEach((config) => {
+  // Append a ward element generated using the configuration to the bed section
   bedSection.appendChild(
     generateWard(config.title, config.beds, config.startNumber)
   )

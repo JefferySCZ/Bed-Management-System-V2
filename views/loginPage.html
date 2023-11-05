@@ -1,20 +1,21 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
+    <meta charset="UTF-8" />
     <link rel="stylesheet" href="/css/loginPage.css" />
-
-    <title>Login Page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Secret Login Page</title>
   </head>
   <body>
     <h1>Login Page</h1>
-    <form action="/views" method="post">
+    <form action="/views/" method="post">
       <label for="username">Username:</label>
-      <input type="text" id="username" name="username" required /><br /><br />
+      <input type="text" name="username" id="username" required /><br /><br />
       <label for="password">Password:</label>
       <input
         type="password"
-        id="password"
         name="password"
+        id="password"
         required
       /><br /><br />
       <input type="submit" value="Login" />

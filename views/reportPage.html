@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" href="/css/reportPage.css" />
+    <link rel="stylesheet" href="/css/style.css" />
+
+    <title>Patient Report Database</title>
+  </head>
+  <body>
+    <header>
+      <img src="/pics/UOP.logo.jpeg" alt="Logo" id="logo" />
+
+      <h1>Patient Report</h1>
+    </header>
+    <nav>
+      <ul>
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="reportPage.html">Report</a></li>
+        <li class="logout"><a href="/">Logout</a></li>
+      </ul>
+    </nav>
+    <input
+      type="text"
+      id="searchInput"
+      placeholder="Search patients..."
+      onkeyup="filterTable()"
+    />
+
+    <!-- Add a table to display patient data -->
+    <table id="patientTable">
+      <thead>
+        <tr>
+          <th></th>
+          <th onclick="sortTable(1)">Patient ID &#x25B2;&#x25BC;</th>
+          <th onclick="sortTable(2)">Name &#x25B2;&#x25BC;</th>
+          <th onclick="sortTable(3)">Gender &#x25B2;&#x25BC;</th>
+          <th onclick="sortTable(4)">Blood Type &#x25B2;&#x25BC;</th>
+          <th>Date of Birth</th>
+          <th onclick="sortTable(6)">Age &#x25B2;&#x25BC;</th>
+          <th onclick="sortTable(7)">Illness &#x25B2;&#x25BC;</th>
+          <th onclick="sortTable(8)">Ward Category &#x25B2;&#x25BC;</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <!-- Add an export button to generate a .txt or .csv file of the sorted data -->
+    <button onclick="exportTable()">Export</button>
+
+    <script src="../js/reportPage.js"></script>
+  </body>
+</html>
