@@ -109,11 +109,13 @@
 .tooltip-content {
   position: absolute;
   justify-content: center;
-  background-color: var(--section-bg-color); /* Background color */
-  color: #333; /* Text color */
-  padding: 5px 10px; /* Padding */
-  border-radius: 4px; /* Rounded corners */
-  font-size: 16px; /* Increased font size */
+  background-color: var(--section-bg-color);
+  color: #333;
+  padding: 5px 10px;
+  border-style: solid;
+
+  border-radius: 4px;
+  font-size: 16px;
   line-height: 1.5;
   width: 200px;
   visibility: hidden;

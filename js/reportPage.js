@@ -229,3 +229,7 @@ function sortTable(n) {
     }
   }
 }
+
+function refreshPage() {
+  window.location.reload()
+}

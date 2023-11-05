@@ -1,39 +1,44 @@
 # Hospital Bed Management System
 
-A simple system to manage hospital bed occupancy and waiting list patients.
+A system designed to manage hospital bed occupancy and waiting list patients effectively.
 
 ## Description
 
-This system allows hospital staff to keep track of available beds, admit patients from a waiting list, and discharge patients. It integrates with a database to store patient and bed information, ensuring real-time updates and data accuracy.
+This system enables hospital staff to monitor available beds, admit patients from a waiting list, and discharge patients efficiently. It is integrated with a real-time updating database to ensure data accuracy. Additionally, all patient information is recorded within the system. The report page allows for specific patient searches or report downloads for further use.
 
 ## Installation
 
-1. Clone this repository: `git clone [https://github.com/JefferySCZ/Bed-Management-System]`.
-2. Navigate to the project directory: `cd hospital-bed-management`.
-   mkdir my-report-project
-   cd my-report-project
-   npm init -y
-   npm install express body-parser --save
-   npm install ws
+You will need to the zip file of the project and extract it to your desired directory.
 
-3. Install the required dependencies: `npm install express body-parser --save
-` (assuming you're using npm).
-4. Run the application: `npm start`.
+1. Extract the zip file into your chosen directory.
+2. Open a terminal and navigate to the extracted project directory: **`cd path/to/hospital-bed-management`**.
+3. Once inside the project directory, set up your project environment:
+
+```bash
+npm init -y
+```
+
+4. After setting up your project environment, install the required dependencies: **`npm install express body-parser --save`**.
+5. To start the application, run: **`npm start`**.
+6. Use the following credentials to login:
+   Username: admin
+   Password: admin
 
 ## Usage
 
-1. To add a patient to the waiting list, use the "Add to Waiting List" function.
-2. To admit a patient from the waiting list and assign them a bed, click the "Admit" button.
-3. To discharge a patient, click the "Discharge" button next to the occupied bed.
+1. Enter the patient's details and press 'Register'.
+2. The system will automatically assign a bed for the patient in a specific ward category.
+3. If the ward is full, the patient will be placed on a waiting list until a bed becomes available.
+4. Hover the mouse over the bed to quickly check the current patient's details, such as patient ID, name, age, and illness.
+5. To admit a patient from the waiting list and assign a bed, click the 'Admit' button.
+6. To discharge a patient, find the 'Discharge' button next to the occupied bed and click it.
+7. On the report page, you will see data for all registered patients.
+8. You can check their details or through **EXPORT** download the patient data report for further use.
 
 ## Contributing
 
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
-
-<!-- ## License
-
-This project is licensed under the MIT License - see the `LICENSE.md` file for details. -->
+Contributions to this project are appreciated. For substantial changes, please first open an issue to discuss your proposed changes.
 
 ## Support and Contact
 
-For any queries or support, please email [jeffery.sim.cz@gmail.com] or raise an issue in the GitHub repository.
+Should you have any questions or require support, please email [[jeffery.sim.cz@gmail.com](mailto:jeffery.sim.cz@gmail.com)]

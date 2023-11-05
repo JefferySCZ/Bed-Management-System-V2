@@ -160,6 +160,7 @@ document.addEventListener('DOMContentLoaded', function () {
             <strong>Patient ID:</strong> ${patient.patientID}<br>
             <strong>Name:</strong> ${patient.name}<br>
             <strong>Age:</strong> ${patient.age}<br>
+            <strong>Blood Type:</strong> ${patient.bloodType}<br>
             <strong>Illness:</strong> ${patient.illness}<br>
             <!-- Add more fields as needed -->
           `
